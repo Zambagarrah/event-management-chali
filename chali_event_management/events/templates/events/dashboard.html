@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white fw-bold mb-0">My Registered Events</h2>
+    <a href="{% url 'event-list' %}" class="btn btn-outline-light">
+      <i class="fas fa-plus me-2"></i>Discover Events
+    </a>
+  </div>
+  
+  <div class="row">
+    {% for reg in registrations %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="event-card h-100">
+          {% if reg.event.image %}
+            <div class="event-image">
+              <img src="{{ reg.event.image.url }}" class="card-img-top" alt="{{ reg.event.title }}">
+            </div>
+          {% endif %}
+          <div class="card-body p-4">
+            <h5 class="card-title text-white fw-semibold mb-3">{{ reg.event.title }}</h5>
+            <p class="card-text text-light mb-3">{{ reg.event.description|truncatewords:15 }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">
+                <i class="fas fa-calendar me-1"></i>
+                {{ reg.event.date|date:"M d, Y" }}
+              </small>
+              <a href="{% url 'event-detail' reg.event.pk %}" class="btn btn-primary btn-sm">
+                View Details
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="empty-state text-center py-5">
+          <i class="fas fa-calendar-times text-muted mb-3" style="font-size: 3rem;"></i>
+          <h4 class="text-muted mb-3">No Events Registered</h4>
+          <p class="text-muted mb-4">You haven't registered for any events yet. Discover exciting events to join!</p>
+          <a href="{% url 'event-list' %}" class="btn btn-primary">
+            <i class="fas fa-search me-2"></i>Browse Events
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
+    <h2 class="text-white fw-bold mb-0">My Tickets</h2>
+  </div>
+  
+  <div class="row">
+    {% for ticket in tickets %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="event-card h-100">
+          {% if ticket.event.image %}
+            <div class="event-image">
+              <img src="{{ ticket.event.image.url }}" class="card-img-top" alt="{{ ticket.event.title }}">
+            </div>
+          {% endif %}
+          <div class="card-body p-4">
+            <h5 class="card-title text-white fw-semibold mb-3">{{ ticket.event.title }}</h5>
+            <div class="ticket-details mb-3">
+              <p class="text-light mb-2">
+                <i class="fas fa-ticket-alt me-2"></i>
+                Quantity: {{ ticket.quantity|default:1 }}
+              </p>
+              <p class="text-light mb-2">
+                <i class="fas fa-calendar me-2"></i>
+                Purchased: {{ ticket.purchased_at|date:"M d, Y" }}
+              </p>
+              <p class="text-light mb-3">
+                <i class="fas fa-dollar-sign me-2"></i>
+                Total Cost: ${{ ticket.event.ticket_price|floatformat:2 }}
+                {% if ticket.quantity > 1 %} x {{ ticket.quantity }} = ${% widthratio ticket.event.ticket_price 1 ticket.quantity|default:1 %}{% endif %}
+              </p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">
+                <i class="fas fa-calendar me-1"></i>
+                {{ ticket.event.date_time|date:"M d, Y" }}
+              </small>
+              <a href="{% url 'event-detail' ticket.event.pk %}" class="btn btn-primary btn-sm">
+                View Event
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="empty-state text-center py-5">
+          <i class="fas fa-ticket-alt text-muted mb-3" style="font-size: 3rem;"></i>
+          <h4 class="text-muted mb-3">No Tickets Purchased</h4>
+          <p class="text-muted mb-4">You haven't purchased any tickets yet. Browse events and get your tickets!</p>
+          <a href="{% url 'event-list' %}" class="btn btn-primary">
+            <i class="fas fa-search me-2"></i>Browse Events
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+.event-card {
+  background: var(--darker-gray);
+  border: 1px solid var(--border-dark);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-purple);
+}
+
+.event-image {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+}
+
+.event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover .event-image img {
+  transform: scale(1.05);
+}
+
+.btn-outline-light {
+  border-color: var(--border-dark);
+  color: var(--text-light);
+  transition: all 0.2s ease;
+}
+
+.btn-outline-light:hover {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  color: white;
+}
+
+.btn-primary {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  transform: translateY(-1px);
+}
+
+.empty-state {
+  background: var(--darker-gray);
+  border: 1px solid var(--border-dark);
+  border-radius: 12px;
+  margin: 2rem 0;
+}
+
+.card-body {
+  background: transparent;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+</style>
+{% endblock %}

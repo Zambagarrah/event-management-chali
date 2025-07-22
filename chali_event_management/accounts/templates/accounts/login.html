@@ -6,8 +6,8 @@
       <div class="col-xl-5 col-lg-6 col-md-8">
         <!-- Header Section -->
         <div class="auth-header text-center mb-5">
-          <h1 class="auth-title">Create your account</h1>
-          <p class="auth-subtitle">Join Mula and start creating amazing events</p>
+          <h1 class="auth-title">Welcome back</h1>
+          <p class="auth-subtitle">Sign in to your Mula account</p>
         </div>
 
         <form method="post" class="auth-form">
@@ -18,30 +18,13 @@
             {% for field in form %}
               <div class="form-group">
                 <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
-                {% if field.name == 'role' %}
-                  <select name="{{ field.name }}" class="form-control auth-input auth-select" id="{{ field.id_for_label }}" {% if field.field.required %}required{% endif %}>
-                    <option value="" disabled selected>Choose your role</option>
-                    {% for choice in field.field.choices %}
-                      <option value="{{ choice.0 }}" {% if field.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
-                    {% endfor %}
-                  </select>
-                {% elif field.name == 'password1' or field.name == 'password2' %}
-                  <input type="password" 
-                         name="{{ field.name }}" 
-                         value="{{ field.value|default:'' }}"
-                         placeholder="Enter your {{ field.label|lower }}"
-                         class="form-control auth-input"
-                         id="{{ field.id_for_label }}"
-                         {% if field.field.required %}required{% endif %}>
-                {% else %}
-                  <input type="{{ field.field.widget.input_type|default:'text' }}" 
-                         name="{{ field.name }}" 
-                         value="{{ field.value|default:'' }}"
-                         placeholder="{{ field.label }}"
-                         class="form-control auth-input"
-                         id="{{ field.id_for_label }}"
-                         {% if field.field.required %}required{% endif %}>
-                {% endif %}
+                <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                       name="{{ field.name }}" 
+                       value="{{ field.value|default:'' }}"
+                       placeholder="Enter your {{ field.label|lower }}"
+                       class="form-control auth-input"
+                       id="{{ field.id_for_label }}"
+                       {% if field.field.required %}required{% endif %}>
                 {% if field.help_text %}
                   <div class="field-helper">{{ field.help_text }}</div>
                 {% endif %}
@@ -54,10 +37,10 @@
 
           <!-- Action Buttons -->
           <div class="form-actions">
-            <button type="submit" class="btn-auth">Create Account</button>
+            <button type="submit" class="btn-auth">Sign In</button>
             <div class="auth-link-container">
-              <p class="auth-link-text">Already have an account? 
-                <a href="{% url 'login' %}" class="auth-link">Sign in</a>
+              <p class="auth-link-text">Don't have an account? 
+                <a href="{% url 'register' %}" class="auth-link">Create one</a>
               </p>
             </div>
           </div>
@@ -158,62 +141,6 @@
 .auth-input::placeholder {
   color: #888888;
   font-weight: 400;
-}
-
-/* Select dropdown styling */
-.auth-select {
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-  background: #1a1a1a !important;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
-  background-position: right 1rem center !important;
-  background-repeat: no-repeat !important;
-  background-size: 1.25em 1.25em !important;
-  padding-right: 3rem !important;
-  cursor: pointer;
-  color: white;
-  font-weight: 500;
-}
-
-.auth-select::-ms-expand {
-  display: none;
-}
-
-.auth-select::-webkit-appearance {
-  -webkit-appearance: none !important;
-}
-
-.auth-select:focus {
-  background: #222222 !important;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
-  background-position: right 1rem center !important;
-  background-repeat: no-repeat !important;
-  background-size: 1.25em 1.25em !important;
-}
-
-.auth-select option {
-  background: #1a1a1a;
-  color: white;
-  padding: 0.75rem;
-  border: none;
-  font-weight: 500;
-}
-
-.auth-select option:hover,
-.auth-select option:checked {
-  background: #333333;
-  color: white;
-}
-
-.auth-select option:first-child {
-  color: #888888;
-  font-style: italic;
-}
-
-/* Remove default select styling */
-.auth-select::-ms-expand {
-  display: none;
 }
 
 .field-error {

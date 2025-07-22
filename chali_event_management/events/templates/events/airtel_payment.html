@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="payment-page">
+  <div class="payment-container">
+    <div class="payment-header">
+      <h2 class="payment-title">Airtel Money Payment</h2>
+      <p class="payment-subtitle">Complete your payment using Airtel Money</p>
+    </div>
+
+    <!-- Payment Form -->
+    <div class="payment-form-container">
+      <div class="payment-method-info">
+        <div class="payment-logo">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Airtel_Money_Logo.png/1200px-Airtel_Money_Logo.png" 
+               alt="Airtel Money Logo" 
+               style="max-width: 120px; height: auto;"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <!-- Fallback SVG if image fails to load -->
+          <svg width="120" height="60" viewBox="0 0 120 60" fill="none" style="display: none;">
+            <circle cx="30" cy="30" r="20" fill="#E31E24"/>
+            <text x="30" y="36" text-anchor="middle" fill="white" font-size="8" font-weight="bold">AIRTEL</text>
+            <text x="80" y="36" text-anchor="middle" fill="#E31E24" font-size="12" font-weight="bold">Money</text>
+          </svg>
+        </div>
+        <h3>Airtel Money Payment</h3>
+        <p>Enter your Airtel Money registered phone number to complete the payment</p>
+      </div>
+
+      <form method="post" class="payment-form">
+        {% csrf_token %}
+        <input type="hidden" name="quantity" value="{{ quantity }}">
+        
+        <div class="form-group">
+          <label for="phone_number">Airtel Money Phone Number</label>
+          <input 
+            type="tel" 
+            id="phone_number" 
+            name="phone_number" 
+            placeholder="254XXXXXXXXX or 256XXXXXXXXX" 
+            pattern="[0-9]{12}" 
+            required
+            class="form-control"
+          >
+          <small class="form-hint">Enter your phone number in format: 254XXXXXXXXX (Kenya) or 256XXXXXXXXX (Uganda)</small>
+        </div>
+
+        <div class="form-group">
+          <label for="pin">Airtel Money PIN</label>
+          <input 
+            type="password" 
+            id="pin" 
+            name="pin" 
+            placeholder="Enter your 4-digit PIN" 
+            pattern="[0-9]{4}" 
+            maxlength="4"
+            required
+            class="form-control"
+          >
+          <small class="form-hint">Enter your 4-digit Airtel Money PIN</small>
+        </div>
+
+        <div class="payment-summary">
+          <h4>Payment Summary</h4>
+          <div class="summary-row">
+            <span>Event:</span>
+            <span>{{ event.title }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Quantity:</span>
+            <span>{{ quantity }} ticket(s)</span>
+          </div>
+          <div class="summary-row">
+            <span>Price per ticket:</span>
+            <span>${{ event.ticket_price }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total Amount:</span>
+            <span>${{ total_amount }}</span>
+          </div>
+        </div>
+
+        <button type="submit" class="payment-submit-btn">
+          <i class="fas fa-mobile-alt me-2"></i>
+          Pay ${{ total_amount }} with Airtel Money
+        </button>
+      </form>
+
+      <div class="payment-security">
+        <div class="security-item">
+          <i class="fas fa-shield-alt"></i>
+          <span>Your payment is secured with Airtel Money encryption</span>
+        </div>
+        <div class="security-item">
+          <i class="fas fa-zap"></i>
+          <span>Fast and reliable mobile payment processing</span>
+        </div>
+        <div class="security-item">
+          <i class="fas fa-mobile-alt"></i>
+          <span>Available across multiple African countries</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.payment-page {
+  background: #000000;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: white;
+  padding: 40px 0;
+}
+
+.payment-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.payment-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.payment-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.payment-subtitle {
+  font-size: 16px;
+  color: #888888;
+}
+
+.payment-form-container {
+  background: #111111;
+  border: 1px solid #333333;
+  border-radius: 16px;
+  padding: 40px;
+}
+
+.payment-method-info {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.payment-logo {
+  margin-bottom: 15px;
+}
+
+.payment-method-info h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.payment-method-info p {
+  color: #cccccc;
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 15px;
+  background: #222222;
+  border: 1px solid #444444;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #E31E24;
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.1);
+}
+
+.form-hint {
+  color: #888888;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+.payment-summary {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.payment-summary h4 {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  color: #cccccc;
+  font-size: 14px;
+}
+
+.summary-row.total {
+  border-top: 1px solid #333333;
+  margin-top: 10px;
+  padding-top: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.summary-row.total span:last-child {
+  color: #E31E24;
+}
+
+.payment-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: #E31E24;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.payment-submit-btn:hover {
+  background: #c91920;
+  transform: translateY(-2px);
+}
+
+.payment-security {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #333333;
+}
+
+.security-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #888888;
+  font-size: 14px;
+}
+
+.security-item i {
+  color: #E31E24;
+}
+
+@media (max-width: 768px) {
+  .payment-container {
+    padding: 0 15px;
+  }
+  
+  .payment-form-container {
+    padding: 25px;
+  }
+  
+  .payment-title {
+    font-size: 24px;
+  }
+}
+</style>
+{% endblock %}
