@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="auth-container">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-5 col-lg-6 col-md-8">
+        <!-- Header Section -->
+        <div class="auth-header text-center mb-5">
+          <h1 class="auth-title">Create your account</h1>
+          <p class="auth-subtitle">Join Mula and start creating amazing events</p>
+        </div>
+
+        <form method="post" class="auth-form">
+          {% csrf_token %}
+          
+          <!-- Form Section -->
+          <div class="form-section">
+            {% for field in form %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+                {% if field.name == 'role' %}
+                  <select name="{{ field.name }}" class="form-control auth-input auth-select" id="{{ field.id_for_label }}" {% if field.field.required %}required{% endif %}>
+                    <option value="" disabled selected>Choose your role</option>
+                    {% for choice in field.field.choices %}
+                      <option value="{{ choice.0 }}" {% if field.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                    {% endfor %}
+                  </select>
+                {% elif field.name == 'password1' or field.name == 'password2' %}
+                  <input type="password" 
+                         name="{{ field.name }}" 
+                         value="{{ field.value|default:'' }}"
+                         placeholder="Enter your {{ field.label|lower }}"
+                         class="form-control auth-input"
+                         id="{{ field.id_for_label }}"
+                         {% if field.field.required %}required{% endif %}>
+                {% else %}
+                  <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                         name="{{ field.name }}" 
+                         value="{{ field.value|default:'' }}"
+                         placeholder="{{ field.label }}"
+                         class="form-control auth-input"
+                         id="{{ field.id_for_label }}"
+                         {% if field.field.required %}required{% endif %}>
+                {% endif %}
+                {% if field.help_text %}
+                  <div class="field-helper">{{ field.help_text }}</div>
+                {% endif %}
+                {% if field.errors %}
+                  <div class="field-error">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-actions">
+            <button type="submit" class="btn-auth">Create Account</button>
+            <div class="auth-link-container">
+              <p class="auth-link-text">Already have an account? 
+                <a href="{% url 'login' %}" class="auth-link">Sign in</a>
+              </p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.auth-container {
+  min-height: 100vh;
+  background: #000000;
+  padding: 2rem 0;
+}
+
+.auth-header {
+  margin-bottom: 3rem;
+}
+
+.auth-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.025em;
+}
+
+.auth-subtitle {
+  font-size: 1.125rem;
+  color: #888888;
+  margin: 0;
+  font-weight: 400;
+}
+
+.auth-form {
+  background: #111111;
+  border-radius: 16px;
+  border: 1px solid #333333;
+  overflow: hidden;
+}
+
+.form-section {
+  padding: 2rem 2rem 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.field-helper {
+  font-size: 0.875rem;
+  color: #aaaaaa;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: white;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #222222;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.auth-input:hover {
+  border-color: #555555;
+  background: #222222;
+}
+
+.auth-input::placeholder {
+  color: #888888;
+  font-weight: 400;
+}
+
+/* Select dropdown styling */
+.auth-select {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background: #1a1a1a !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 1rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 1.25em 1.25em !important;
+  padding-right: 3rem !important;
+  cursor: pointer;
+  color: white;
+  font-weight: 500;
+}
+
+.auth-select::-ms-expand {
+  display: none;
+}
+
+.auth-select::-webkit-appearance {
+  -webkit-appearance: none !important;
+}
+
+.auth-select:focus {
+  background: #222222 !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 1rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 1.25em 1.25em !important;
+}
+
+.auth-select option {
+  background: #1a1a1a;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  font-weight: 500;
+}
+
+.auth-select option:hover,
+.auth-select option:checked {
+  background: #333333;
+  color: white;
+}
+
+.auth-select option:first-child {
+  color: #888888;
+  font-style: italic;
+}
+
+/* Remove default select styling */
+.auth-select::-ms-expand {
+  display: none;
+}
+
+.field-error {
+  color: #ff6b6b;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.field-error::before {
+  content: "⚠";
+  font-size: 1rem;
+}
+
+/* Form Actions */
+.form-actions {
+  padding: 2rem;
+  background: #111111;
+  border-top: 1px solid #333333;
+  text-align: center;
+}
+
+.btn-auth {
+  background: linear-gradient(135deg, white 0%, #f8f8f8 100%);
+  color: #000000;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.btn-auth:hover {
+  background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+  transform: translateY(-2px);
+  color: #000000;
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+}
+
+.auth-link-container {
+  text-align: center;
+}
+
+.auth-link-text {
+  color: #aaaaaa;
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.auth-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+  color: #f0f0f0;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 1rem 0;
+  }
+  
+  .auth-title {
+    font-size: 2rem;
+  }
+  
+  .form-section {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+  
+  .form-actions {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 0.5rem 0;
+  }
+  
+  .auth-form {
+    border-radius: 12px;
+    margin: 0 0.5rem;
+  }
+  
+  .form-section {
+    padding: 1.25rem 1rem 0.75rem;
+  }
+  
+  .form-actions {
+    padding: 1.25rem 1rem;
+  }
+}
+</style>
+{% endblock %}

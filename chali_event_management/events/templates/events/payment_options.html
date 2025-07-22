@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="payment-page">
+  <div class="payment-container">
+    <div class="payment-header">
+      <h2 class="payment-title">Choose Payment Method</h2>
+      <p class="payment-subtitle">Select your preferred payment option to complete your purchase</p>
+    </div>
+
+    <div class="payment-grid">
+      <!-- M-Pesa Payment Option -->
+      <div class="payment-card mpesa-card" data-payment="mpesa">
+        <div class="payment-card-header">
+          <div class="payment-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/1200px-M-PESA_LOGO-01.svg.png" 
+                 alt="M-Pesa Logo" 
+                 style="max-width: 80px; height: auto;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <!-- Fallback SVG if image fails to load -->
+            <svg width="80" height="40" viewBox="0 0 80 40" fill="none" style="display: none;">
+              <rect x="0" y="10" width="80" height="20" rx="2" fill="#00A651"/>
+              <text x="40" y="23" text-anchor="middle" fill="white" font-size="8" font-weight="bold">M-PESA</text>
+            </svg>
+          </div>
+          <h3 class="payment-name">M-Pesa</h3>
+        </div>
+        <div class="payment-card-body">
+          <p class="payment-description">Pay securely with your M-Pesa mobile money account</p>
+          <div class="payment-features">
+            <div class="feature-item">
+              <i class="fas fa-check"></i>
+              <span>Instant payment</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-shield-alt"></i>
+              <span>Secure & trusted</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-mobile-alt"></i>
+              <span>Mobile payment</span>
+            </div>
+          </div>
+        </div>
+        <div class="payment-card-footer">
+          <button class="payment-btn mpesa-btn" onclick="selectPayment('mpesa')">
+            <i class="fas fa-mobile-alt me-2"></i>
+            Pay with M-Pesa
+          </button>
+        </div>
+      </div>
+
+      <!-- PayPal Payment Option -->
+      <div class="payment-card paypal-card" data-payment="paypal">
+        <div class="payment-card-header">
+          <div class="payment-logo">
+            <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png" 
+                 alt="PayPal Logo" 
+                 style="max-width: 80px; height: auto;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <!-- Fallback SVG if image fails to load -->
+            <svg width="80" height="40" viewBox="0 0 24 24" fill="none" style="display: none;">
+              <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 2.6C5.026 2.068 5.474 1.665 6 1.665h7.3c1.816 0 3.078.408 3.78 1.175.7.766 1.034 1.85.762 3.109-.585 2.7-2.044 4.351-4.394 4.351H10.77l-.672 4.036h2.672c.344 0 .625.281.625.625 0 .344-.281.625-.625.625H7.076z" fill="#0070ba"/>
+              <path d="M13.448 9.3h-2.678l-.672 4.036H7.426c-.344 0-.625.281-.625.625 0 .344.281.625.625.625h5.694c.344 0 .625-.281.625-.625 0-.344-.281-.625-.625-.625h-2.672L11.12 9.3h2.328z" fill="#003087"/>
+            </svg>
+          </div>
+          <h3 class="payment-name">PayPal</h3>
+        </div>
+        <div class="payment-card-body">
+          <p class="payment-description">Pay with your PayPal account or credit/debit card</p>
+          <div class="payment-features">
+            <div class="feature-item">
+              <i class="fas fa-globe"></i>
+              <span>Worldwide accepted</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-lock"></i>
+              <span>Buyer protection</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-credit-card"></i>
+              <span>Card & bank options</span>
+            </div>
+          </div>
+        </div>
+        <div class="payment-card-footer">
+          <button class="payment-btn paypal-btn" onclick="selectPayment('paypal')">
+            <i class="fab fa-paypal me-2"></i>
+            Pay with PayPal
+          </button>
+        </div>
+      </div>
+
+      <!-- Airtel Money Payment Option -->
+      <div class="payment-card airtel-card" data-payment="airtel">
+        <div class="payment-card-header">
+          <div class="payment-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Airtel_Money_Logo.png/1200px-Airtel_Money_Logo.png" 
+                 alt="Airtel Money Logo" 
+                 style="max-width: 80px; height: auto;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <!-- Fallback SVG if image fails to load -->
+            <svg width="80" height="40" viewBox="0 0 80 40" fill="none" style="display: none;">
+              <circle cx="20" cy="20" r="15" fill="#E31E24"/>
+              <text x="20" y="25" text-anchor="middle" fill="white" font-size="6" font-weight="bold">AIRTEL</text>
+              <text x="55" y="25" text-anchor="middle" fill="#E31E24" font-size="8" font-weight="bold">Money</text>
+            </svg>
+          </div>
+          <h3 class="payment-name">Airtel Money</h3>
+        </div>
+        <div class="payment-card-body">
+          <p class="payment-description">Pay using your Airtel Money mobile wallet</p>
+          <div class="payment-features">
+            <div class="feature-item">
+              <i class="fas fa-zap"></i>
+              <span>Fast transactions</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-shield-alt"></i>
+              <span>Secure payments</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-mobile-alt"></i>
+              <span>Mobile wallet</span>
+            </div>
+          </div>
+        </div>
+        <div class="payment-card-footer">
+          <button class="payment-btn airtel-btn" onclick="selectPayment('airtel')">
+            <i class="fas fa-mobile-alt me-2"></i>
+            Pay with Airtel Money
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+      <h3 class="summary-title">Order Summary</h3>
+      <div class="summary-item">
+        <span class="item-name">{{ event.title }}</span>
+        <span class="item-price">${{ event.ticket_price }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="item-name">Quantity</span>
+        <span class="item-price">{{ quantity|default:1 }}</span>
+      </div>
+      <hr class="summary-divider">
+      <div class="summary-total">
+        <span class="total-label">Total Amount</span>
+        <span class="total-price">${{ total_amount|default:event.ticket_price }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.payment-page {
+  background: #000000;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: white;
+  padding: 40px 0;
+}
+
+.payment-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.payment-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.payment-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.payment-subtitle {
+  font-size: 16px;
+  color: #888888;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.payment-card {
+  background: #111111;
+  border: 2px solid #333333;
+  border-radius: 16px;
+  padding: 30px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.payment-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.mpesa-card:hover {
+  border-color: #00A651;
+  box-shadow: 0 20px 40px rgba(0, 166, 81, 0.2);
+}
+
+.paypal-card:hover {
+  border-color: #0070ba;
+  box-shadow: 0 20px 40px rgba(0, 112, 186, 0.2);
+}
+
+.airtel-card:hover {
+  border-color: #E31E24;
+  box-shadow: 0 20px 40px rgba(227, 30, 36, 0.2);
+}
+
+.payment-card-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.payment-logo {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.payment-name {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.payment-description {
+  color: #cccccc;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.payment-features {
+  margin-bottom: 25px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #aaaaaa;
+}
+
+.feature-item i {
+  color: #666666;
+  width: 16px;
+}
+
+.payment-card-footer {
+  text-align: center;
+}
+
+.payment-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mpesa-btn {
+  background: #00A651;
+  color: white;
+}
+
+.mpesa-btn:hover {
+  background: #008c46;
+  transform: translateY(-2px);
+}
+
+.paypal-btn {
+  background: #0070ba;
+  color: white;
+}
+
+.paypal-btn:hover {
+  background: #005ea6;
+  transform: translateY(-2px);
+}
+
+.airtel-btn {
+  background: #E31E24;
+  color: white;
+}
+
+.airtel-btn:hover {
+  background: #c91920;
+  transform: translateY(-2px);
+}
+
+/* Order Summary */
+.order-summary {
+  background: #111111;
+  border: 1px solid #333333;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.summary-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  color: #cccccc;
+}
+
+.item-name {
+  font-size: 14px;
+}
+
+.item-price {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.summary-divider {
+  border: none;
+  border-top: 1px solid #333333;
+  margin: 15px 0;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+.total-price {
+  color: #00A651;
+}
+
+/* Selected State */
+.payment-card.selected {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.payment-card.selected::before {
+  content: '✓';
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #8b5cf6;
+  color: white;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .payment-container {
+    padding: 0 15px;
+  }
+  
+  .payment-title {
+    font-size: 24px;
+  }
+  
+  .payment-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .payment-card {
+    padding: 20px;
+  }
+  
+  .order-summary {
+    margin-top: 30px;
+  }
+}
+</style>
+
+<script>
+function selectPayment(paymentMethod) {
+  // Remove selected class from all cards
+  document.querySelectorAll('.payment-card').forEach(card => {
+    card.classList.remove('selected');
+  });
+  
+  // Add selected class to clicked card
+  document.querySelector(`[data-payment="${paymentMethod}"]`).classList.add('selected');
+  
+  // Here you can add logic to handle the payment method selection
+  console.log('Selected payment method:', paymentMethod);
+  
+  // Example: You can redirect to payment processing page or show payment form
+  // For now, we'll just show an alert
+  setTimeout(() => {
+    switch(paymentMethod) {
+      case 'mpesa':
+        // Redirect to M-Pesa payment page
+        window.location.href = `{% url 'mpesa-payment' event.id %}?quantity={{ quantity|default:1 }}`;
+        break;
+      case 'paypal':
+        // Redirect to PayPal payment page
+        window.location.href = `{% url 'paypal-payment' event.id %}?quantity={{ quantity|default:1 }}`;
+        break;
+      case 'airtel':
+        // Redirect to Airtel Money payment page
+        window.location.href = `{% url 'airtel-payment' event.id %}?quantity={{ quantity|default:1 }}`;
+        break;
+    }
+  }, 500);
+}
+
+// Add click event listeners to payment cards
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.payment-card').forEach(card => {
+    card.addEventListener('click', function() {
+      const paymentMethod = this.dataset.payment;
+      selectPayment(paymentMethod);
+    });
+  });
+});
+</script>
+{% endblock %}

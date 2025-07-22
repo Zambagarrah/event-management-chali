@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="payment-page">
+  <div class="payment-container">
+    <div class="payment-header">
+      <h2 class="payment-title">PayPal Payment</h2>
+      <p class="payment-subtitle">Complete your payment using PayPal</p>
+    </div>
+
+    <!-- Payment Form -->
+    <div class="payment-form-container">
+      <div class="payment-method-info">
+        <div class="payment-logo">
+          <!-- PayPal Logo -->
+          <table border="0" cellpadding="10" cellspacing="0" align="center">
+            <tr><td align="center"></td></tr>
+            <tr><td align="center">
+              <a href="https://www.paypal.com/ke/webapps/mpp/paypal-popup" title="How PayPal Works" onclick="javascript:window.open('https://www.paypal.com/ke/webapps/mpp/paypal-popup','WIPaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700'); return false;">
+                <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png" border="0" alt="PayPal Logo" style="max-width: 120px;">
+              </a>
+            </td></tr>
+          </table>
+          <!-- PayPal Logo -->
+        </div>
+        <h3>PayPal Secure Payment</h3>
+        <p>Pay with your PayPal account or any major credit/debit card</p>
+      </div>
+
+      <form method="post" class="payment-form">
+        {% csrf_token %}
+        <input type="hidden" name="quantity" value="{{ quantity }}">
+        
+        <div class="payment-options">
+          <div class="payment-option">
+            <input type="radio" id="paypal_account" name="payment_type" value="paypal_account" checked>
+            <label for="paypal_account">
+              <i class="fab fa-paypal"></i>
+              Pay with PayPal Account
+            </label>
+          </div>
+          <div class="payment-option">
+            <input type="radio" id="credit_card" name="payment_type" value="credit_card">
+            <label for="credit_card">
+              <i class="fas fa-credit-card"></i>
+              Pay with Credit/Debit Card
+            </label>
+          </div>
+        </div>
+
+        <div class="payment-summary">
+          <h4>Payment Summary</h4>
+          <div class="summary-row">
+            <span>Event:</span>
+            <span>{{ event.title }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Quantity:</span>
+            <span>{{ quantity }} ticket(s)</span>
+          </div>
+          <div class="summary-row">
+            <span>Price per ticket:</span>
+            <span>${{ event.ticket_price }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total Amount:</span>
+            <span>${{ total_amount }}</span>
+          </div>
+        </div>
+
+        <button type="submit" class="payment-submit-btn">
+          <i class="fab fa-paypal me-2"></i>
+          Pay ${{ total_amount }} with PayPal
+        </button>
+      </form>
+
+      <div class="payment-security">
+        <div class="security-item">
+          <i class="fas fa-shield-alt"></i>
+          <span>Protected by PayPal's buyer protection program</span>
+        </div>
+        <div class="security-item">
+          <i class="fas fa-lock"></i>
+          <span>SSL encrypted secure payment processing</span>
+        </div>
+        <div class="security-item">
+          <i class="fas fa-globe"></i>
+          <span>Accepted worldwide</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.payment-page {
+  background: #000000;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: white;
+  padding: 40px 0;
+}
+
+.payment-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.payment-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.payment-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.payment-subtitle {
+  font-size: 16px;
+  color: #888888;
+}
+
+.payment-form-container {
+  background: #111111;
+  border: 1px solid #333333;
+  border-radius: 16px;
+  padding: 40px;
+}
+
+.payment-method-info {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.payment-logo {
+  margin-bottom: 15px;
+}
+
+.payment-method-info h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.payment-method-info p {
+  color: #cccccc;
+  font-size: 14px;
+}
+
+.payment-options {
+  margin-bottom: 25px;
+}
+
+.payment-option {
+  margin-bottom: 15px;
+}
+
+.payment-option input[type="radio"] {
+  display: none;
+}
+
+.payment-option label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: #222222;
+  border: 2px solid #333333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-option input[type="radio"]:checked + label {
+  border-color: #0070ba;
+  background: rgba(0, 112, 186, 0.1);
+}
+
+.payment-option label i {
+  font-size: 20px;
+  color: #0070ba;
+}
+
+.payment-summary {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.payment-summary h4 {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  color: #cccccc;
+  font-size: 14px;
+}
+
+.summary-row.total {
+  border-top: 1px solid #333333;
+  margin-top: 10px;
+  padding-top: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.summary-row.total span:last-child {
+  color: #0070ba;
+}
+
+.payment-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: #0070ba;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.payment-submit-btn:hover {
+  background: #005ea6;
+  transform: translateY(-2px);
+}
+
+.payment-security {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #333333;
+}
+
+.security-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #888888;
+  font-size: 14px;
+}
+
+.security-item i {
+  color: #0070ba;
+}
+
+@media (max-width: 768px) {
+  .payment-container {
+    padding: 0 15px;
+  }
+  
+  .payment-form-container {
+    padding: 25px;
+  }
+  
+  .payment-title {
+    font-size: 24px;
+  }
+}
+</style>
+{% endblock %}
