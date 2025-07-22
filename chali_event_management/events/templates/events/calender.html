@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white fw-bold mb-0">
+      <i class="fas fa-calendar text-purple me-2"></i>Events Calendar
+    </h2>
+    <div class="calendar-actions">
+      <a href="{% url 'event-list' %}" class="btn btn-outline-light me-2">
+        <i class="fas fa-list me-2"></i>List View
+      </a>
+      <a href="{% url 'event-create' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Add Event
+      </a>
+    </div>
+  </div>
+
+  <div class="calendar-container">
+    <div id='calendar'></div>
+  </div>
+</div>
+
+<style>
+.text-purple {
+  color: var(--accent-purple) !important;
+}
+
+.calendar-container {
+  background: var(--darker-gray);
+  border: 1px solid var(--border-dark);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.btn-primary {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  transform: translateY(-1px);
+}
+
+.btn-outline-light {
+  border-color: var(--border-dark);
+  color: var(--text-light);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-light:hover {
+  background: var(--darkest-gray);
+  border-color: var(--text-muted);
+  color: var(--text-light);
+}
+
+/* FullCalendar Dark Theme */
+.fc-theme-standard .fc-scrollgrid {
+  border: 1px solid var(--border-dark);
+}
+
+.fc-theme-standard th,
+.fc-theme-standard td {
+  border-color: var(--border-dark);
+}
+
+.fc-theme-standard .fc-scrollgrid-sync-table {
+  background: var(--darkest-gray);
+}
+
+.fc .fc-toolbar-title {
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.fc .fc-button-primary {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  color: white;
+}
+
+.fc .fc-button-primary:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.fc .fc-button-primary:disabled {
+  background: var(--dark-gray);
+  border-color: var(--dark-gray);
+}
+
+.fc-daygrid-day-number {
+  color: var(--text-light);
+}
+
+.fc-col-header-cell {
+  background: var(--darkest-gray);
+}
+
+.fc-col-header-cell-cushion {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.fc-daygrid-day {
+  background: var(--darker-gray);
+}
+
+.fc-daygrid-day:hover {
+  background: var(--darkest-gray);
+}
+
+.fc-day-today {
+  background: rgba(139, 92, 246, 0.1) !important;
+}
+
+.fc-event {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.fc-event:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.fc-event-title {
+  font-weight: 500;
+}
+
+.fc-more-link {
+  color: var(--accent-purple);
+}
+
+.fc-more-link:hover {
+  color: #7c3aed;
+}
+
+@media (max-width: 768px) {
+  .calendar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .calendar-actions .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .calendar-container {
+    padding: 1rem;
+  }
+  
+  .fc-toolbar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+  }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,listWeek'
+      },
+      height: 'auto',
+      events: [
+        {% for event in events %}
+        {
+          title: "{{ event.title }}",
+          start: "{{ event.date_time|date:'Y-m-d\TH:i:s' }}",
+          url: "{% url 'event-detail' event.pk %}",
+          backgroundColor: '#8b5cf6',
+          borderColor: '#8b5cf6',
+          textColor: '#ffffff'
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ],
+      eventClick: function(info) {
+        info.jsEvent.preventDefault();
+        window.location.href = info.event.url;
+      },
+      eventMouseEnter: function(info) {
+        info.el.style.transform = 'scale(1.02)';
+        info.el.style.zIndex = '1000';
+      },
+      eventMouseLeave: function(info) {
+        info.el.style.transform = 'scale(1)';
+        info.el.style.zIndex = 'auto';
+      }
+    });
+    calendar.render();
+  });
+</script>
+{% endblock %}

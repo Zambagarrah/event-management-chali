@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="payment-page">
+  <div class="payment-container">
+    <div class="payment-header">
+      <h2 class="payment-title">M-Pesa Payment</h2>
+      <p class="payment-subtitle">Complete your payment using M-Pesa</p>
+    </div>
+
+    <!-- Payment Form -->
+    <div class="payment-form-container">
+      <div class="payment-method-info">
+        <div class="payment-logo">
+          <!-- M-Pesa Official Logo -->
+          <div class="mpesa-logo-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/1200px-M-PESA_LOGO-01.svg.png" 
+                 alt="M-Pesa Logo" 
+                 style="max-width: 120px; height: auto;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <!-- Fallback SVG if image fails to load -->
+            <svg width="120" height="60" viewBox="0 0 120 60" fill="none" style="display: none;">
+              <rect x="0" y="15" width="120" height="30" rx="4" fill="#00A651"/>
+              <text x="60" y="35" text-anchor="middle" fill="white" font-size="12" font-weight="bold" font-family="Arial, sans-serif">M-PESA</text>
+            </svg>
+          </div>
+        </div>
+        <h3>M-Pesa Mobile Payment</h3>
+        <p>Enter your M-Pesa registered phone number to complete the payment</p>
+      </div>
+
+      <form method="post" class="payment-form">
+        {% csrf_token %}
+        <input type="hidden" name="quantity" value="{{ quantity }}">
+        
+        <div class="form-group">
+          <label for="phone_number">M-Pesa Phone Number</label>
+          <input 
+            type="tel" 
+            id="phone_number" 
+            name="phone_number" 
+            placeholder="254XXXXXXXXX" 
+            pattern="[0-9]{12}" 
+            required
+            class="form-control"
+          >
+          <small class="form-hint">Enter your phone number in format: 254XXXXXXXXX</small>
+        </div>
+
+        <div class="payment-summary">
+          <h4>Payment Summary</h4>
+          <div class="summary-row">
+            <span>Event:</span>
+            <span>{{ event.title }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Quantity:</span>
+            <span>{{ quantity }} ticket(s)</span>
+          </div>
+          <div class="summary-row">
+            <span>Price per ticket:</span>
+            <span>${{ event.ticket_price }}</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total Amount:</span>
+            <span>${{ total_amount }}</span>
+          </div>
+        </div>
+
+        <button type="submit" class="payment-submit-btn">
+          <i class="fas fa-mobile-alt me-2"></i>
+          Pay ${{ total_amount }} with M-Pesa
+        </button>
+      </form>
+
+      <div class="payment-security">
+        <div class="security-item">
+          <i class="fas fa-shield-alt"></i>
+          <span>Your payment is secured with M-Pesa encryption</span>
+        </div>
+        <div class="security-item">
+          <i class="fas fa-clock"></i>
+          <span>Payment will be processed instantly</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.payment-page {
+  background: #000000;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: white;
+  padding: 40px 0;
+}
+
+.payment-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.payment-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.payment-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.payment-subtitle {
+  font-size: 16px;
+  color: #888888;
+}
+
+.payment-form-container {
+  background: #111111;
+  border: 1px solid #333333;
+  border-radius: 16px;
+  padding: 40px;
+}
+
+.payment-method-info {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.payment-logo {
+  margin-bottom: 15px;
+}
+
+.payment-method-info h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.payment-method-info p {
+  color: #cccccc;
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 15px;
+  background: #222222;
+  border: 1px solid #444444;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #00A651;
+  box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1);
+}
+
+.form-hint {
+  color: #888888;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+.payment-summary {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.payment-summary h4 {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  color: #cccccc;
+  font-size: 14px;
+}
+
+.summary-row.total {
+  border-top: 1px solid #333333;
+  margin-top: 10px;
+  padding-top: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.summary-row.total span:last-child {
+  color: #00A651;
+}
+
+.payment-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: #00A651;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.payment-submit-btn:hover {
+  background: #008c46;
+  transform: translateY(-2px);
+}
+
+.payment-security {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #333333;
+}
+
+.security-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #888888;
+  font-size: 14px;
+}
+
+.security-item i {
+  color: #00A651;
+}
+
+@media (max-width: 768px) {
+  .payment-container {
+    padding: 0 15px;
+  }
+  
+  .payment-form-container {
+    padding: 25px;
+  }
+  
+  .payment-title {
+    font-size: 24px;
+  }
+}
+</style>
+{% endblock %}

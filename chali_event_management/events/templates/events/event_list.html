@@ -1,0 +1,628 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="black-events-page">
+  <div class="black-container">
+    <div class="events-header">
+      <div class="header-content">
+        <h1 class="page-title">
+          {% if search_query %}
+            Search Results for "{{ search_query }}"
+          {% else %}
+            Discover Events
+          {% endif %}
+        </h1>
+        <div class="header-actions">
+          <span class="events-count">{{ total_events }} event{{ total_events|pluralize }} found</span>
+          {% if user.is_authenticated %}
+            <a href="{% url 'event-create' %}" class="create-event-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Create Event
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if search_query and total_events == 0 %}
+      <div class="no-results">
+        <div class="no-results-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </div>
+        <h3>No events found</h3>
+        <p>Try adjusting your search terms or <a href="{% url 'event-list' %}">browse all events</a></p>
+      </div>
+    {% elif events_by_category %}
+      {% for category, category_events in events_by_category.items %}
+        <div class="category-section">
+          <div class="category-header">
+            <h2 class="category-title">{{ category }}</h2>
+            <span class="category-count">{{ category_events|length }} event{{ category_events|length|pluralize }}</span>
+          </div>
+          
+          <div class="events-grid">
+            {% for event in category_events %}
+              <div class="black-event-card">
+                <div class="event-image-container">
+                  {% if event.image %}
+                    <img src="{{ event.image.url }}" alt="{{ event.title }}" class="event-image">
+                  {% else %}
+                    <div class="event-placeholder">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                      </svg>
+                    </div>
+                  {% endif %}
+                  <div class="event-date-badge">
+                    <span class="date-day">{{ event.date_time|date:"d" }}</span>
+                    <span class="date-month">{{ event.date_time|date:"M" }}</span>
+                  </div>
+                </div>
+                
+                <div class="event-content">
+                  <div class="event-header">
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    <div class="event-price">
+                      {% if event.ticket_price and event.ticket_price > 0 %}
+                        <span class="price-amount">${{ event.ticket_price }}</span>
+                      {% else %}
+                        <span class="price-free">Free</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <div class="event-meta">
+                    <div class="meta-item">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                      </svg>
+                      <span>{{ event.date_time|date:"M d, Y g:i A" }}</span>
+                    </div>
+                    
+                    {% if event.location %}
+                      <div class="meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                          <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <span>{{ event.location }}</span>
+                      </div>
+                    {% endif %}
+                    
+                    <div class="meta-item">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                      </svg>
+                      <span>{{ event.organizer.get_full_name|default:event.organizer.username }}</span>
+                    </div>
+                  </div>
+                  
+                  {% if event.description %}
+                    <p class="event-description">{{ event.description|truncatewords:15 }}</p>
+                  {% endif %}
+                  
+                  <div class="event-stats">
+                    <div class="stat-item">
+                      <span class="stat-number">{{ event.registrations.count }}</span>
+                      <span class="stat-label">registered</span>
+                    </div>
+                    {% if event.total_tickets > 0 %}
+                      <div class="stat-item">
+                        <span class="stat-number">{{ event.tickets.count }}/{{ event.total_tickets }}</span>
+                        <span class="stat-label">tickets sold</span>
+                      </div>
+                    {% endif %}
+                  </div>
+                  
+                  <a href="{% url 'event-detail' event.pk %}" class="view-event-btn">
+                    View Event
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="no-events">
+        <div class="no-events-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <h3>No events yet</h3>
+        <p>Be the first to create an event!</p>
+        {% if user.is_authenticated %}
+          <a href="{% url 'event-create' %}" class="create-first-event-btn">Create Your First Event</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+/* Black Theme Events Page */
+.black-events-page {
+  background: #000000;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: white;
+  padding-top: 40px;
+}
+
+.black-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header */
+.events-header {
+  margin-bottom: 48px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.events-count {
+  color: #888888;
+  font-size: 14px;
+}
+
+.create-event-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: #000000;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.create-event-btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: #000000;
+}
+
+/* Category Sections */
+.category-section {
+  margin-bottom: 64px;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #222222;
+}
+
+.category-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.category-count {
+  color: #888888;
+  font-size: 14px;
+}
+
+/* Events Grid */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 32px;
+}
+
+/* Event Cards */
+.black-event-card {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.black-event-card:hover {
+  transform: translateY(-4px);
+  border-color: #333333;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.event-image-container {
+  position: relative;
+  height: 200px;
+}
+
+.event-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666666;
+}
+
+.event-date-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.date-day {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+.date-month {
+  display: block;
+  font-size: 12px;
+  color: #cccccc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Event Content */
+.event-content {
+  padding: 24px;
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.event-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.event-price {
+  flex-shrink: 0;
+}
+
+.price-amount {
+  background: #007bff;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.price-free {
+  background: #22c55e;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.event-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.meta-item svg {
+  color: #888888;
+  flex-shrink: 0;
+}
+
+.event-description {
+  color: #cccccc;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.event-stats {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #1a1a1a;
+  border-radius: 8px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-number {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #888888;
+}
+
+.view-event-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: transparent;
+  color: white;
+  border: 1px solid #333333;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.view-event-btn:hover {
+  background: #222222;
+  border-color: #444444;
+  color: white;
+  text-decoration: none;
+}
+
+/* Empty States */
+.no-results,
+.no-events {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.no-results-icon,
+.no-events-icon {
+  margin-bottom: 24px;
+  color: #666666;
+}
+
+.no-results h3,
+.no-events h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.no-results p,
+.no-events p {
+  color: #888888;
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.no-results a,
+.create-first-event-btn {
+  color: #007bff;
+  text-decoration: none;
+}
+.event-card {
+  background: var(--darker-gray);
+  border: 1px solid var(--border-dark);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-purple);
+}
+
+.event-image {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+}
+
+.event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover .event-image img {
+  transform: scale(1.05);
+}
+
+.event-date-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-align: center;
+  min-width: 50px;
+}
+
+.date-day {
+  display: block;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.date-month {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.btn-primary {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  transform: translateY(-1px);
+}
+
+.empty-state {
+  background: var(--darker-gray);
+  border: 1px solid var(--border-dark);
+  border-radius: 12px;
+  margin: 2rem 0;
+}
+
+.event-meta {
+  border-top: 1px solid var(--border-dark);
+  border-bottom: 1px solid var(--border-dark);
+  padding: 0.75rem 0;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.create-first-event-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: #000000;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.create-first-event-btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: #000000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .events-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .page-title {
+    font-size: 28px;
+  }
+  
+  .category-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .event-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .event-stats {
+    gap: 16px;
+  }
+}
+</style>
+   
+{% endblock %}

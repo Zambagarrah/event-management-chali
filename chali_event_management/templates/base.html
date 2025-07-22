@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mula</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Original Dark Theme Variables */
+        :root {
+            --white: #e7dfdfff;
+            --light-gray: #f8f9fa;
+            --gray: #6c757d;
+            --dark-gray: #2d3436;
+            --darker-gray: #1e2327;
+            --darkest-gray: #0f1419;
+            --black: #000000;
+            --pure-black: #0a0a0a;
+            --shadow-black: rgba(0, 0, 0, 0.8);
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-blue: #3b82f6;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-dark: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Base Lu.ma Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #01060cff;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        /* Lu.ma Page Layout */
+        .luma-page {
+            min-height: 100vh;
+            background: #f8f9fa;
+        }
+
+        .luma-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .luma-nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .luma-logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .nav-center {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-item {
+            color: #0f0f0fff;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover {
+            color: #1a1a1a;
+        }
+
+        .create-event-nav {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .luma-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .luma-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 48px;
+        }
+
+        /* Event Preview Panel */
+        .event-preview-panel {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .event-image {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .default-event-bg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+        }
+
+        .upload-icon svg {
+            opacity: 0.6;
+        }
+
+        .theme-section {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #0b0b0cff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .theme-picker {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .theme-option.active {
+            border-color: #000;
+            background: #f9fafb;
+        }
+
+        .theme-swatch {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .theme-swatch.minimal {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Form Panel */
+        .form-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .form-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .calendar-control,
+        .visibility-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+            transition: border-color 0.2s;
+        }
+
+        .calendar-control:hover,
+        .visibility-control:hover {
+            border-color: #d1d5db;
+        }
+
+        .control-icon {
+            font-size: 16px;
+        }
+
+        /* Form Fields */
+        .field-group {
+            margin-bottom: 24px;
+        }
+
+        .title-group {
+            margin-bottom: 32px;
+        }
+
+        .event-title {
+            width: 100%;
+            border: none;
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a1a1a;
+            background: transparent;
+            padding: 0;
+            outline: none;
+            line-height: 1.2;
+        }
+
+        .event-title::placeholder {
+            color: #d1d5db;
+        }
+
+        .datetime-field,
+        .location-field,
+        .description-field {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #f9fafb;
+            transition: border-color 0.2s;
+        }
+
+        .datetime-field:hover,
+        .location-field:hover,
+        .description-field:hover {
+            border-color: #d1d5db;
+        }
+
+        .field-icon {
+            font-size: 20px;
+            color: #6b7280;
+            min-width: 24px;
+        }
+
+        .field-content {
+            flex: 1;
+        }
+
+        .field-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .datetime-input,
+        .location-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            color: #1a1a1a;
+            outline: none;
+        }
+
+        .datetime-input::placeholder,
+        .location-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .field-hint {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .timezone-info {
+            text-align: right;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .timezone {
+            font-weight: 500;
+        }
+
+        .location {
+            opacity: 0.8;
+        }
+
+        .description-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            color: #1a1a1a;
+            outline: none;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .description-input::placeholder {
+            color: #9ca3af;
+        }
+
+        /* Options Section */
+        .options-section {
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .option-field {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: #f9fafb;
+            margin-bottom: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .option-field:hover {
+            border-color: #d1d5db;
+        }
+
+        .option-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-label {
+            font-weight: 500;
+            color: #1a1a1a;
+            min-width: 80px;
+        }
+
+        .option-select,
+        .option-input {
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            color: #1a1a1a;
+            outline: none;
+            flex: 1;
+        }
+
+        .option-select {
+            cursor: pointer;
+        }
+
+        .option-badge {
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        /* Create Button */
+        .create-button {
+            width: 100%;
+            background: #000;
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 32px;
+            transition: background-color 0.2s;
+        }
+
+        .create-button:hover {
+            background: #1a1a1a;
+        }
+
+        /* Error Styling */
+        .field-error {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 8px;
+            padding-left: 40px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .luma-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .event-preview-panel {
+                position: static;
+                order: 2;
+            }
+
+            .form-panel {
+                order: 1;
+                padding: 24px;
+            }
+
+            .nav-center {
+                display: none;
+            }
+
+            .event-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Original Dark Theme for other pages */
+        .dark-theme-page body {
+            background: linear-gradient(135deg, var(--darkest-gray) 0%, var(--darker-gray) 100%);
+            color: var(--text-light);
+        }
+
+        .metaverse-navbar {
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-dark);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            padding: 0.75rem 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar-brand:hover {
+            color: var(--accent-purple);
+            transform: none;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-purple);
+            margin-right: 0.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-muted) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--white) !important;
+            background: rgba(139, 92, 246, 0.1);
+            transform: none;
+        }
+
+        .nav-link.active {
+            color: var(--white) !important;
+            background: var(--accent-purple);
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .navbar-toggler {
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            padding: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .navbar-toggler:hover {
+            border-color: var(--accent-purple);
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
+        }
+
+        .navbar-toggler-icon {
+            background-image: none;
+            width: 24px;
+            height: 2px;
+            background: var(--text-light);
+            position: relative;
+            transition: all 0.2s ease;
+            border-radius: 1px;
+        }
+
+        .navbar-toggler-icon::before,
+        .navbar-toggler-icon::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            background: var(--text-light);
+            transition: all 0.2s ease;
+            border-radius: 1px;
+        }
+
+        .navbar-toggler-icon::before {
+            top: -6px;
+        }
+
+        .navbar-toggler-icon::after {
+            top: 6px;
+        }
+
+        .hologram-effect {
+            position: relative;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-collapse {
+                background: var(--darker-gray);
+                border-radius: 12px;
+                margin-top: 1rem;
+                padding: 1.5rem;
+                border: 1px solid var(--border-dark);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        /* Dropdown Menu Styling */
+        .dropdown-menu {
+            background: var(--darker-gray);
+            border: 1px solid var(--border-dark);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            margin-top: 8px;
+            z-index: 9999 !important;
+        }
+
+        .dropdown-item {
+            color: var(--text-light);
+            padding: 8px 16px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        .dropdown-divider {
+            border-color: var(--border-dark);
+            margin: 8px 0;
+        }
+
+        /* Alert styling */
+        .alert {
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #1a1a1a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            border-color: #fed7aa;
+            color: #d97706;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        /* Dark theme alert styling for other pages */
+        .dark-theme-page .alert {
+            background: var(--darker-gray);
+            border: 1px solid var(--border-dark);
+            color: var(--text-light);
+            border-radius: 8px;
+        }
+
+        .dark-theme-page .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+
+        .dark-theme-page .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .dark-theme-page .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+        }
+
+        .dark-theme-page .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: rgba(15, 20, 25, 0.98);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-dark);
+            padding: 20px 0;
+            position: sticky;
+            top: 64px;
+            z-index: 95;
+        }
+
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .search-input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            padding: 0 16px;
+            transition: all 0.2s ease;
+            flex: 1;
+        }
+
+        .category-filter {
+            flex-shrink: 0;
+        }
+
+        .category-select {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text-light);
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 160px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .category-select:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .category-select option {
+            background: var(--darker-gray);
+            color: var(--text-light);
+        }
+
+        .search-input-group:focus-within {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .search-icon {
+            color: #888888;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-light);
+            font-size: 16px;
+            padding: 14px 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-input::placeholder {
+            color: #666666;
+        }
+
+        .search-button {
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 12px;
+        }
+
+        .search-button:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .clear-search {
+            color: #888888;
+            text-decoration: none;
+            font-size: 14px;
+            align-self: flex-start;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .clear-search:hover {
+            color: var(--text-light);
+            background: rgba(255, 255, 255, 0.05);
+            text-decoration: none;
+        }
+
+        /* Responsive Search */
+        @media (max-width: 768px) {
+            .search-section {
+                padding: 16px 0;
+            }
+            
+            .search-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .search-input-group {
+                padding: 0 12px;
+            }
+            
+            .search-input {
+                font-size: 16px;
+                padding: 12px 0;
+            }
+            
+            .search-button {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            
+            .category-filter {
+                width: 100%;
+            }
+            
+            .category-select {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg metaverse-navbar">
+  <div class="container-fluid hologram-effect">
+    <a class="navbar-brand" href="/">
+      <i class="fas fa-calendar-alt"></i>Mula
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'event-list' %}">
+            <i class="fas fa-calendar-alt"></i>Events
+          </a>
+        </li>
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'event-create' %}">
+              <i class="fas fa-plus"></i>Create Event
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'dashboard' %}">
+              Dashboard
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user"></i>{{ user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'dashboard' %}">My Dashboard</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">
+              Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">
+              <i class="fas fa-user-plus"></i>Register
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Bar Section -->
+{% if request.resolver_match.url_name not in 'login,register' %}
+<div class="search-section">
+  <div class="container">
+    <div class="search-container">
+      <form method="GET" action="{% url 'event-list' %}" class="search-form">
+        <div class="search-row">
+          <div class="search-input-group">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" 
+                   name="search" 
+                   value="{{ request.GET.search }}" 
+                   placeholder="Search events by title, location, or organizer..." 
+                   class="search-input">
+            <button type="submit" class="search-button">Search</button>
+          </div>
+          <div class="category-filter">
+            <select name="category" class="category-select">
+              <option value="">All Categories</option>
+              <option value="conference" {% if request.GET.category == 'conference' %}selected{% endif %}>Conference</option>
+              <option value="workshop" {% if request.GET.category == 'workshop' %}selected{% endif %}>Workshop</option>
+              <option value="meetup" {% if request.GET.category == 'meetup' %}selected{% endif %}>Meetup</option>
+              <option value="seminar" {% if request.GET.category == 'seminar' %}selected{% endif %}>Seminar</option>
+              <option value="networking" {% if request.GET.category == 'networking' %}selected{% endif %}>Networking</option>
+              <option value="social" {% if request.GET.category == 'social' %}selected{% endif %}>Social</option>
+              <option value="sports" {% if request.GET.category == 'sports' %}selected{% endif %}>Sports & Fitness</option>
+              <option value="entertainment" {% if request.GET.category == 'entertainment' %}selected{% endif %}>Entertainment</option>
+              <option value="educational" {% if request.GET.category == 'educational' %}selected{% endif %}>Educational</option>
+              <option value="business" {% if request.GET.category == 'business' %}selected{% endif %}>Business</option>
+              <option value="technology" {% if request.GET.category == 'technology' %}selected{% endif %}>Technology</option>
+              <option value="arts" {% if request.GET.category == 'arts' %}selected{% endif %}>Arts & Culture</option>
+              <option value="food" {% if request.GET.category == 'food' %}selected{% endif %}>Food & Drink</option>
+              <option value="charity" {% if request.GET.category == 'charity' %}selected{% endif %}>Charity & Fundraising</option>
+              <option value="other" {% if request.GET.category == 'other' %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+        </div>
+        {% if request.GET.search or request.GET.category %}
+          <a href="{% url 'event-list' %}" class="clear-search">Clear filters</a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="container mt-4">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  {% block content %}
+  {% endblock %}
+</div>
+<!-- FullCalendar CSS -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
+
+<!-- FullCalendar JS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Image preview functionality for lu.ma form
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInput = document.querySelector('input[type="file"]');
+        const imageDisplay = document.getElementById('eventImageDisplay');
+        
+        if (imageInput && imageDisplay) {
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imageDisplay.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>
