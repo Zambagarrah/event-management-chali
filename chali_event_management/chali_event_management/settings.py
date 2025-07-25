@@ -17,6 +17,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+#M-Pesa settings
+MPESA_CONSUMER_KEY = '3D7oWqmzGG6IpI4Akb4OvYfPBtvOiz5Kha37P23xOtUQpDfh'
+MPESA_CONSUMER_SECRET = 'ht79s3WYpUv9XUaB3ZsciJGfpNfyBZHb5CCYxUGg4wHuvxAhBD1EMnaxpD72KTCZ'
+MPESA_PASSKEY = 'sandbox_dummy_passkey'
+MPESA_SHORTCODE = '174379'
+MPESA_ENV = 'sandbox'  # or 'production'
+CALLBACK_URL = 'https://yourdomain.com/mpesa/callback/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/

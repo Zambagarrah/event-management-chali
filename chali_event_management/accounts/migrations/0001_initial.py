@@ -8,6 +8,7 @@ def create_user_groups(apps, schema_editor):
     """Create default user groups."""
     Group.objects.get_or_create(name='Organizer')
     Group.objects.get_or_create(name='Attendee')
+    Group.objects.get_or_create(name='Admin')
 
 
 def remove_user_groups(apps, schema_editor):
@@ -21,5 +22,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_user_groups, remove_user_groups),
+        migrations.RunPython(create_user_groups),
     ]
