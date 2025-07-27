@@ -1,13 +1,23 @@
 {
-  "functions": {
-    "api/index.py": {
-      "runtime": "python3.9"
-    }
-  },
+  "version": 2,
   "builds": [
-    { "src": "./api/index.py", "use": "@vercel/python" }
+    {
+      "src": "user_management/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.9"
+      }
+    },
+    {
+      "src": "build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles"
+      }
+    }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "./api/index.py" }
+    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "src": "/(.*)", "dest": "user_management/wsgi.py" }
   ]
 }
