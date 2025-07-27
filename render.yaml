@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: chali-event-manager
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn chali_event_management.wsgi:application
+    autoDeploy: true
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: chali_event_management.settings
