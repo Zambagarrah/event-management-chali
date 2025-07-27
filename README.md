@@ -82,7 +82,7 @@ Open your browser at: `http://127.0.0.1:8000/`
 
 ## 💳 Simulating M-Pesa Payments
 
-- Use test number: 254708374149
+- Use test number: `254708374149`
 
 - Make sure Shortcode and Passkey are valid for sandbox
 - Use [Ngrok](https://ngrok.com) for local webhook testing:
