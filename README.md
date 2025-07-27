@@ -83,5 +83,78 @@ Open your browser at: `http://127.0.0.1:8000/`
 ## 💳 Simulating M-Pesa Payments
 
 - Use test number: 254708374149
+
 - Make sure Shortcode and Passkey are valid for sandbox
-- Use Ngrok for local webhook testing:
+- Use [Ngrok](https://ngrok.com) for local webhook testing:
+
+```
+ngrok http 8000
+```
+
+## 🛡️ Security Notes
+
+- M-Pesa credentials should be stored in `.env` in production.
+- Always set `DEBUG = False` when deploying.
+- Use `HTTPS` for production.
+- Use `ALLOWED_HOSTS` and `HTTPS` when going live.
+
+- Use `CSRF` protection.
+
+## 📁 App Structure
+
+```
+chali_event_management/
+    ├── __init__.py
+    ├── settings.py
+    ├── urls.py
+    ├── wsgi.py
+    ├── asgi.py
+accounts/
+    ├── migrations/
+    ├── templates/accounts/
+    ├── __init__.py
+    ├── models.py
+    ├── views.py
+    ├── admin.py
+    ├── urls.py
+    ├── forms.py
+    ├── apps.py
+    ├── tests.py
+events/
+    ├── migrations/
+    ├── templates/events/
+    ├── __init__.py
+    ├── models.py
+    ├── views.py
+    ├── admin.py
+    ├── urls.py
+    ├── forms.py
+    ├── apps.py
+    ├── tests.py
+templates/
+    ├── base.html
+media/
+    ├── event_images/
+├── manage.py
+├── README.md
+├── requirements.txt
+```
+
+## 🪄 Future Enhancements
+
+- 🛒 PayPal/Flutterwave integration.
+- 🎫 QR code ticket generation.
+- 📉 Dashboard analytics for organizers.
+- 📝 Ticket tiers (VIP, Regular, Early Bird).
+
+## 📮 Contact & Credits
+
+Built by:
+
+-  [Zablon Zambagarrah](https://github.com/Zambagarrah)
+-  [Avril Diamond](https://github.com/almasi-y/)
+-  [Lisa Mosweta](https://github.com/lisamswt/)
+-  [Mulky Mohammed](https://github.com/mulkymma/)
+-  [Ummi Ramma]()
+
+
