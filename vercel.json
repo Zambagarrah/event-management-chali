@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "user_management/wsgi.py",
+      "src": "./chali_event_management/wsgi.py",
       "use": "@vercel/python",
       "config": {
         "runtime": "python3.9"
@@ -18,6 +18,6 @@
   ],
   "routes": [
     { "src": "/static/(.*)", "dest": "/static/$1" },
-    { "src": "/(.*)", "dest": "user_management/wsgi.py" }
+    { "src": "/(.*)", "dest": "./chali_event_management/wsgi.py" }
   ]
 }
