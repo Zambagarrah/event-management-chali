@@ -1,0 +1,850 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="create-event-container">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-6 col-lg-8">
+        <!-- Header Section -->
+        <div class="create-header text-center mb-5">
+          <h1 class="create-title">
+            {% if form.instance.pk %}
+              Edit your event
+            {% else %}
+              Create a new event
+            {% endif %}
+          </h1>
+          <p class="create-subtitle">
+            {% if form.instance.pk %}
+              Update your event details
+            {% else %}
+              Share something awesome with your community
+            {% endif %}
+          </p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="create-form">
+          {% csrf_token %}
+          
+          <!-- Event Basics Section -->
+          <div class="form-section">
+            <div class="section-header">
+              <h3 class="section-title">Event basics</h3>
+              <p class="section-subtitle">Name your event and tell people what it's about</p>
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.title.id_for_label }}" class="field-label">Event name *</label>
+              <input type="text" 
+                     name="{{ form.title.name }}" 
+                     value="{{ form.title.value|default:'' }}"
+                     placeholder="Give your event a catchy name"
+                     class="form-control event-title-input"
+                     id="{{ form.title.id_for_label }}">
+              {% if form.title.errors %}
+                <div class="field-error">{{ form.title.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.description.id_for_label }}" class="field-label">Description</label>
+              <div class="field-helper">Write 2-3 sentences about your event</div>
+              <textarea name="{{ form.description.name }}"
+                        placeholder="Tell people what makes your event special and what they can expect..."
+                        class="form-control event-description-input"
+                        id="{{ form.description.id_for_label }}">{{ form.description.value|default:'' }}</textarea>
+              {% if form.description.errors %}
+                <div class="field-error">{{ form.description.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.category.id_for_label }}" class="field-label">Category</label>
+              <select name="{{ form.category.name }}" class="form-control event-category-select" id="{{ form.category.id_for_label }}">
+                <option value="">Choose a category</option>
+                {% for choice in form.category.field.choices %}
+                  <option value="{{ choice.0 }}" {% if form.category.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                {% endfor %}
+              </select>
+              {% if form.category.errors %}
+                <div class="field-error">{{ form.category.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Event Image Section -->
+          <div class="form-section">
+            <div class="section-header">
+              <h3 class="section-title">Event photo</h3>
+              <p class="section-subtitle">Add a photo to make your event stand out</p>
+            </div>
+            
+            <div class="form-group">
+              <div class="image-upload-container">
+                <div class="image-upload-area" id="imageUploadArea">
+                  <div class="upload-placeholder" id="uploadPlaceholder">
+                    <div class="upload-icon">
+                      <i class="fas fa-image"></i>
+                    </div>
+                    <div class="upload-text">
+                      <div class="upload-title">Add event photo</div>
+                      <div class="upload-subtitle">Drag and drop or click to upload</div>
+                    </div>
+                  </div>
+                  <div class="image-preview" id="imagePreview" style="display: none;">
+                    <img id="previewImg" src="" alt="Event preview" />
+                    <div class="image-overlay">
+                      <div class="overlay-text">
+                        <div class="overlay-title">Click to change photo</div>
+                      </div>
+                    </div>
+                  </div>
+                  {{ form.image }}
+                </div>
+                {% if form.image.errors %}
+                  <div class="field-error">{{ form.image.errors }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Date & Location Section -->
+          <div class="form-section">
+            <div class="section-header">
+              <h3 class="section-title">Date & location</h3>
+              <p class="section-subtitle">When and where is your event happening?</p>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="{{ form.date_time.id_for_label }}" class="field-label">Date & time *</label>
+                <input type="datetime-local" 
+                       name="{{ form.date_time.name }}"
+                       value="{{ form.date_time.value|default:'' }}"
+                       class="form-control event-datetime-input"
+                       id="{{ form.date_time.id_for_label }}">
+                {% if form.date_time.errors %}
+                  <div class="field-error">{{ form.date_time.errors }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.location.id_for_label }}" class="field-label">Location</label>
+              <div class="field-helper">Where will your event take place?</div>
+              <input type="text" 
+                     name="{{ form.location.name }}"
+                     value="{{ form.location.value|default:'' }}"
+                     placeholder="Enter venue address or online link"
+                     class="form-control event-location-input"
+                     id="{{ form.location.id_for_label }}">
+              {% if form.location.errors %}
+                <div class="field-error">{{ form.location.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Event Settings Section -->
+          <div class="form-section">
+            <div class="section-header">
+              <h3 class="section-title">Event settings</h3>
+              <p class="section-subtitle">Configure your event preferences</p>
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.max_attendees.id_for_label }}" class="field-label">Maximum attendees</label>
+              <div class="field-helper">Set a limit for how many people can attend (optional)</div>
+              <input type="number" 
+                     name="{{ form.max_attendees.name }}"
+                     value="{{ form.max_attendees.value|default:'' }}"
+                     placeholder="e.g. 50"
+                     min="1"
+                     class="form-control event-capacity-input"
+                     id="{{ form.max_attendees.id_for_label }}">
+              {% if form.max_attendees.errors %}
+                <div class="field-error">{{ form.max_attendees.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.total_tickets.id_for_label }}" class="field-label">Total tickets available</label>
+              <div class="field-helper">How many tickets are available for purchase?</div>
+              <input type="number" 
+                     name="{{ form.total_tickets.name }}"
+                     value="{{ form.total_tickets.value|default:'' }}"
+                     placeholder="e.g. 100"
+                     min="0"
+                     class="form-control event-capacity-input"
+                     id="{{ form.total_tickets.id_for_label }}">
+              {% if form.total_tickets.errors %}
+                <div class="field-error">{{ form.total_tickets.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.ticket_price.id_for_label }}" class="field-label">Ticket price</label>
+              <div class="field-helper">Set to $0.00 for free events</div>
+              <div class="price-input-container">
+                <span class="price-symbol">$</span>
+                <input type="number" 
+                       name="{{ form.ticket_price.name }}"
+                       value="{{ form.ticket_price.value|default:'0.00' }}"
+                       placeholder="0.00"
+                       step="0.01"
+                       min="0"
+                       class="form-control event-price-input"
+                       id="{{ form.ticket_price.id_for_label }}">
+              </div>
+              {% if form.ticket_price.errors %}
+                <div class="field-error">{{ form.ticket_price.errors }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-actions">
+            <button type="submit" class="btn-create">
+              {% if form.instance.pk %}Update event{% else %}Create event{% endif %}
+            </button>
+            <a href="{% url 'event-list' %}" class="btn-cancel">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.create-event-container {
+  min-height: 100vh;
+  background: #000000;
+  padding: 2rem 0;
+}
+
+.create-header {
+  margin-bottom: 3rem;
+}
+
+.create-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.025em;
+}
+
+.create-subtitle {
+  font-size: 1.125rem;
+  color: #888888;
+  margin: 0;
+  font-weight: 400;
+}
+
+.create-form {
+  background: #111111;
+  border-radius: 16px;
+  border: 1px solid #333333;
+  overflow: hidden;
+}
+
+.form-section {
+  padding: 2rem 2rem 1.5rem;
+  border-bottom: 1px solid #333333;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  color: #888888;
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.field-helper {
+  font-size: 0.875rem;
+  color: #aaaaaa;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.form-control, .form-select {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-control:focus, .form-select:focus {
+  outline: none;
+  border-color: white;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #222222;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.form-control:hover, .form-select:hover {
+  border-color: #555555;
+  background: #222222;
+}
+
+.form-control::placeholder {
+  color: #888888;
+  font-weight: 400;
+}
+
+textarea.form-control {
+  min-height: 80px;
+  max-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* Event-specific input styling */
+.event-title-input {
+  font-size: 1.125rem;
+  font-weight: 500;
+  padding: 1.25rem 1.5rem;
+}
+
+.event-title-input::placeholder {
+  color: #666666;
+  font-weight: 400;
+}
+
+.event-description-input {
+  min-height: 80px;
+  max-height: 120px;
+  line-height: 1.5;
+  padding: 1rem 1.25rem;
+}
+
+.event-description-input::placeholder {
+  color: #666666;
+  font-style: italic;
+}
+
+.event-category-select {
+  background: #1a1a1a !important;
+  color: white;
+  font-weight: 500;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 1rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 1.25em 1.25em !important;
+  padding-right: 3rem !important;
+  cursor: pointer;
+}
+
+.event-category-select::-ms-expand {
+  display: none;
+}
+
+.event-category-select::-webkit-appearance {
+  -webkit-appearance: none !important;
+}
+
+.event-category-select:focus {
+  background: #222222 !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 1rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 1.25em 1.25em !important;
+}
+
+.event-category-select option {
+  background: #1a1a1a;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+}
+
+.event-category-select option:hover,
+.event-category-select option:checked {
+  background: #333333;
+  color: white;
+}
+
+.event-datetime-input {
+  color-scheme: dark;
+  font-weight: 500;
+}
+
+.event-location-input::placeholder {
+  color: #666666;
+  font-style: normal;
+}
+
+.event-capacity-input {
+  max-width: 200px;
+}
+
+.event-capacity-input::placeholder {
+  color: #666666;
+}
+
+.price-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.price-symbol {
+  position: absolute;
+  left: 1.25rem;
+  color: #aaaaaa;
+  font-weight: 600;
+  font-size: 1rem;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.event-price-input {
+  padding-left: 2.5rem !important;
+  max-width: 200px;
+}
+
+.event-price-input::placeholder {
+  color: #666666;
+}
+
+/* Enhanced input styling */
+.form-control {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+  padding-right: 1.25rem;
+  cursor: pointer;
+}
+
+/* Remove default select styling */
+.form-select::-ms-expand {
+  display: none;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* Image Upload Styling */
+.image-upload-container {
+  width: 100%;
+}
+
+.image-upload-area {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  border: 2px dashed #444444;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #222222 100%);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.image-upload-area:hover {
+  border-color: white;
+  background: linear-gradient(135deg, #222222 0%, #2a2a2a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.image-upload-area input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+}
+
+.upload-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, white 0%, #f0f0f0 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: #000000;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.image-upload-area:hover .upload-icon {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+}
+
+.upload-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.upload-subtitle {
+  font-size: 0.9375rem;
+  color: #aaaaaa;
+  line-height: 1.4;
+}
+
+/* Image Preview Styling */
+.image-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-preview:hover .image-overlay {
+  opacity: 1;
+}
+
+.overlay-text {
+  text-align: center;
+  color: white;
+}
+
+.overlay-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.25rem;
+}
+
+.field-error {
+  color: #ff6b6b;
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.field-error::before {
+  content: "⚠";
+  font-size: 1rem;
+}
+
+/* Form Actions */
+.form-actions {
+  padding: 2rem;
+  background: #111111;
+  border-top: 1px solid #333333;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-create {
+  background: linear-gradient(135deg, white 0%, #f8f8f8 100%);
+  color: #000000;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+.btn-create:hover {
+  background: linear-gradient(135deg, #f8f8f8 0%, #e8e8e8 100%);
+  transform: translateY(-2px);
+  color: #000000;
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+}
+
+.btn-cancel {
+  color: #aaaaaa;
+  background: transparent;
+  border: 1px solid #333333;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-cancel:hover {
+  color: white;
+  background: #222222;
+  border-color: #555555;
+  transform: translateY(-1px);
+}
+
+/* Select dropdown styling */
+.form-select option {
+  background: #1a1a1a;
+  color: white;
+}
+
+/* Date input styling */
+input[type="datetime-local"] {
+  color-scheme: dark;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Number input styling */
+input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .create-event-container {
+    padding: 1rem 0;
+  }
+  
+  .create-title {
+    font-size: 2rem;
+  }
+  
+  .form-section {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+  
+  .form-actions {
+    padding: 1.5rem;
+    flex-direction: column;
+  }
+  
+  .btn-create,
+  .btn-cancel {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .image-upload-area {
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-event-container {
+    padding: 0.5rem 0;
+  }
+  
+  .create-form {
+    border-radius: 12px;
+    margin: 0 0.5rem;
+  }
+  
+  .form-section {
+    padding: 1.25rem 1rem 0.75rem;
+  }
+  
+  .form-actions {
+    padding: 1.25rem 1rem;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const imageInput = document.querySelector('#id_image');
+  const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  
+  // Handle file input change
+  if (imageInput) {
+    imageInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      
+      if (file) {
+        // Check if file is an image
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            uploadPlaceholder.style.display = 'none';
+            imagePreview.style.display = 'block';
+          };
+          
+          reader.readAsDataURL(file);
+        } else {
+          // Reset to placeholder if not an image
+          uploadPlaceholder.style.display = 'flex';
+          imagePreview.style.display = 'none';
+          alert('Please select a valid image file.');
+        }
+      } else {
+        // Reset to placeholder if no file selected
+        uploadPlaceholder.style.display = 'flex';
+        imagePreview.style.display = 'none';
+      }
+    });
+  }
+  
+  // Handle drag and drop
+  const imageUploadArea = document.getElementById('imageUploadArea');
+  
+  if (imageUploadArea) {
+    imageUploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      imageUploadArea.style.borderColor = 'white';
+      imageUploadArea.style.background = 'linear-gradient(135deg, #222222 0%, #2a2a2a 100%)';
+    });
+    
+    imageUploadArea.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      imageUploadArea.style.borderColor = '#444444';
+      imageUploadArea.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #222222 100%)';
+    });
+    
+    imageUploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      imageUploadArea.style.borderColor = '#444444';
+      imageUploadArea.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #222222 100%)';
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+          // Set the file to the input
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          imageInput.files = dt.files;
+          
+          // Trigger change event
+          const event = new Event('change', { bubbles: true });
+          imageInput.dispatchEvent(event);
+        } else {
+          alert('Please drop a valid image file.');
+        }
+      }
+    });
+  }
+  
+  // Check if there's already an image (for edit mode)
+  if (imageInput && imageInput.value) {
+    // This would be for edit mode if there's already an image URL
+    // You might need to adjust this based on how Django handles existing images
+    const existingImageUrl = imageInput.getAttribute('data-existing-url');
+    if (existingImageUrl) {
+      previewImg.src = existingImageUrl;
+      uploadPlaceholder.style.display = 'none';
+      imagePreview.style.display = 'block';
+    }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,644 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="black-event-page">
+  <div class="black-container">
+    <div class="black-grid">
+      <!-- Main Event Content -->
+      <div class="black-main-content">
+        <div class="black-event-card">
+          {% if object.image %}
+            <div class="black-hero-image">
+              <img src="{{ object.image.url }}" alt="{{ object.title }}">
+              <div class="black-date-badge">
+                <div class="date-number">{{ object.date_time|date:"d" }}</div>
+                <div class="date-month">{{ object.date_time|date:"M" }}</div>
+              </div>
+            </div>
+          {% endif %}
+          
+          <div class="black-content">
+            <div class="black-header">
+              <h1 class="black-title">{{ object.title }}</h1>
+              <div class="black-meta">
+                <span class="black-badge">{{ object.category }}</span>
+                <span class="attendee-count">{{ object.registrations.count }} attendees</span>
+              </div>
+            </div>
+
+            <div class="black-details">
+              <div class="detail-row">
+                <div class="detail-icon">📅</div>
+                <div class="detail-content">
+                  <div class="detail-label">Date & Time</div>
+                  <div class="detail-value">{{ object.date_time|date:"l, F d, Y \a\t g:i A" }}</div>
+                </div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-icon">📍</div>
+                <div class="detail-content">
+                  <div class="detail-label">Location</div>
+                  <div class="detail-value">{{ object.location }}</div>
+                </div>
+              </div>
+
+              <div class="detail-row">
+                <div class="detail-icon">👤</div>
+                <div class="detail-content">
+                  <div class="detail-label">Hosted by</div>
+                  <div class="detail-value">{{ object.organizer.get_full_name|default:object.organizer.username }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="black-description">
+              <h3 class="section-title">About this event</h3>
+              <p class="description-text">{{ object.description }}</p>
+            </div>
+
+            {% if object.location %}
+              <div class="black-map">
+                <h3 class="section-title">Event location</h3>
+                <div class="map-embed">
+                  <iframe
+                      width="100%"
+                      height="300"
+                      style="border:0; border-radius: 12px;"
+                      loading="lazy"
+                      allowfullscreen
+                      src="https://www.google.com/maps?q={{ object.location|urlencode }}&output=embed">
+                  </iframe>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="black-sidebar">
+        <div class="black-register-card">
+          <div class="price-section">
+            {% if object.ticket_price and object.ticket_price > 0 %}
+              <div class="price-amount">${{ object.ticket_price }}</div>
+              <div class="price-label">per ticket</div>
+            {% else %}
+              <div class="price-amount">Free</div>
+              <div class="price-label">event</div>
+            {% endif %}
+          </div>
+
+          <div class="ticket-info">
+            <div class="capacity-row">
+              <span class="capacity-label">Tickets Sold</span>
+              <span class="capacity-value">{{ object.tickets.count }}/{{ object.total_tickets }}</span>
+            </div>
+            {% if object.total_tickets > 0 %}
+              {% with sold_tickets=object.tickets.count %}
+              {% widthratio sold_tickets object.total_tickets 100 as ticket_percentage %}
+              <div class="capacity-bar">
+                <div class="capacity-fill" style="width: {{ ticket_percentage }}%"></div>
+              </div>
+              {% endwith %}
+            {% endif %}
+          </div>
+
+          <div class="capacity-info">
+            <div class="capacity-row">
+              <span class="capacity-label">Registered</span>
+              <span class="capacity-value">{{ object.registrations.count }}/{{ object.max_attendees }}</span>
+            </div>
+            {% if object.max_attendees > 0 %}
+              {% widthratio object.registrations.count object.max_attendees 100 as percentage %}
+              <div class="capacity-bar">
+                <div class="capacity-fill" style="width: {{ percentage }}%"></div>
+              </div>
+            {% endif %}
+          </div>
+
+          {% if user.is_authenticated %}
+            <div class="action-buttons">
+              <!-- Registration Button -->
+              {% if object.registrations.count < object.max_attendees %}
+                <a href="{% url 'event-register' object.pk %}" class="black-register-btn">
+                  Register for Event
+                </a>
+              {% else %}
+                <div class="sold-out-btn">
+                  Event Full
+                </div>
+              {% endif %}
+              
+              <!-- Ticket Purchase Button -->
+              {% if object.total_tickets > 0 and object.tickets.count < object.total_tickets %}
+                <a href="{% url 'purchase-ticket' object.pk %}" class="black-ticket-btn">
+                  {% if object.ticket_price and object.ticket_price > 0 %}
+                    Buy Tickets - ${{ object.ticket_price }}
+                  {% else %}
+                    Get Free Tickets
+                  {% endif %}
+                </a>
+              {% elif object.total_tickets > 0 %}
+                <div class="sold-out-btn">
+                  Tickets Sold Out
+                </div>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="login-notice">
+              <div class="notice-text">
+                <a href="{% url 'login' %}" class="login-link">Sign in</a> to register or buy tickets
+              </div>
+            </div>
+          {% endif %}
+
+          {% if user == object.organizer or user.is_staff %}
+            <a href="{% url 'export-attendees' object.pk %}" class="black-export-btn">
+              Export attendee list
+            </a>
+          {% endif %}
+        </div>
+
+        <div class="black-organizer-card">
+          <h4 class="organizer-title">Organizer</h4>
+          <div class="organizer-info">
+            <div class="organizer-avatar">
+              <div class="avatar-circle">{{ object.organizer.get_full_name|default:object.organizer.username|first|upper }}</div>
+            </div>
+            <div class="organizer-details">
+              <div class="organizer-name">{{ object.organizer.get_full_name|default:object.organizer.username }}</div>
+              <div class="organizer-role">Event organizer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Black Theme Event Detail Page */
+.black-event-page {
+  background: #000000;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: white;
+}
+
+.black-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.black-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 60px;
+}
+
+/* Main Content */
+.black-main-content {
+  min-width: 0;
+}
+
+.black-event-card {
+  background: #111111;
+  border: 1px solid #333333;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.black-hero-image {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+}
+
+.black-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.black-date-badge {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #333333;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.date-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+}
+
+.date-month {
+  font-size: 12px;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.black-content {
+  padding: 40px;
+}
+
+.black-header {
+  margin-bottom: 40px;
+}
+
+.black-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.black-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.black-badge {
+  background: white;
+  color: #000000;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.attendee-count {
+  color: #888888;
+  font-size: 14px;
+}
+
+/* Details Section */
+.black-details {
+  margin-bottom: 40px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid #222222;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-icon {
+  font-size: 20px;
+  margin-top: 2px;
+  min-width: 24px;
+}
+
+.detail-content {
+  flex: 1;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.detail-value {
+  font-size: 16px;
+  color: white;
+  font-weight: 500;
+}
+
+/* Description */
+.black-description {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.description-text {
+  font-size: 16px;
+  color: #cccccc;
+  line-height: 1.6;
+}
+
+/* Map */
+.black-map {
+  margin-bottom: 40px;
+}
+
+.map-embed {
+  border: 1px solid #333333;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+/* Sidebar */
+.black-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: sticky;
+  top: 40px;
+  height: fit-content;
+}
+
+.black-register-card,
+.black-organizer-card {
+  background: #111111;
+  border: 1px solid #333333;
+  border-radius: 16px;
+  padding: 32px;
+}
+
+/* Price Section */
+.price-section {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.price-amount {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  display: block;
+  line-height: 1;
+}
+
+.price-label {
+  font-size: 14px;
+  color: #888888;
+  margin-top: 4px;
+}
+
+/* Capacity */
+.capacity-info {
+  margin-bottom: 32px;
+}
+
+.capacity-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.capacity-label {
+  font-size: 14px;
+  color: #888888;
+}
+
+.capacity-value {
+  font-size: 14px;
+  color: white;
+  font-weight: 500;
+}
+
+.capacity-bar {
+  height: 8px;
+  background: #222222;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.capacity-fill {
+  height: 100%;
+  background: white;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Buttons */
+.black-register-btn {
+  width: 100%;
+  background: white;
+  color: #000000;
+  border: none;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.black-register-btn:hover {
+  background: #f0f0f0;
+  color: #000000;
+  transform: translateY(-2px);
+}
+
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Ticket Purchase Button */
+.black-ticket-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  text-align: center;
+  transition: all 0.2s;
+  border: none;
+}
+
+.black-ticket-btn:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: white;
+}
+
+/* Sold Out Button */
+.sold-out-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  background: #6c757d;
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* Ticket Info Section */
+.ticket-info {
+  margin-bottom: 16px;
+}
+
+.black-export-btn {
+  width: 100%;
+  background: transparent;
+  color: white;
+  border: 1px solid #333333;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s ease;
+  display: block;
+}
+
+.black-export-btn:hover {
+  background: #222222;
+  color: white;
+  border-color: #444444;
+}
+
+/* Login Notice */
+.login-notice {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.notice-text {
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.login-link {
+  color: white;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.login-link:hover {
+  color: #f0f0f0;
+}
+
+/* Organizer Card */
+.organizer-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.organizer-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.organizer-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  background: white;
+  color: #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.organizer-details {
+  flex: 1;
+}
+
+.organizer-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.organizer-role {
+  font-size: 12px;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .black-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .black-sidebar {
+    order: -1;
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .black-container {
+    padding: 20px 15px;
+  }
+  
+  .black-content {
+    padding: 30px 20px;
+  }
+  
+  .black-title {
+    font-size: 24px;
+  }
+  
+  .black-register-card,
+  .black-organizer-card {
+    padding: 24px;
+  }
+  
+  .black-hero-image {
+    height: 250px;
+  }
+  
+  .black-date-badge {
+    top: 16px;
+    right: 16px;
+    padding: 12px;
+  }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,562 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="black-register-page">
+  <div class="black-container">
+    <div class="register-header">
+      <a href="{% url 'event-detail' event.pk %}" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Back to event
+      </a>
+    </div>
+
+    <div class="register-grid">
+      <div class="register-main">
+        <div class="register-form-card">
+          {% if existing_registration %}
+            <div class="status-section">
+              <div class="status-icon success">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22,4 12,14.01 9,11.01"/>
+                </svg>
+              </div>
+              <h1 class="status-title">Already Registered!</h1>
+              <p class="status-message">You're already registered for this event. We'll see you there!</p>
+            </div>
+          {% elif existing_ticket %}
+            <div class="status-section">
+              <div class="status-icon success">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22,4 12,14.01 9,11.01"/>
+                </svg>
+              </div>
+              <h1 class="status-title">Tickets Purchased!</h1>
+              <p class="status-message">You already have tickets for this event. Registration is included with your ticket purchase.</p>
+            </div>
+          {% elif available_spots <= 0 %}
+            <div class="status-section">
+              <div class="status-icon error">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+              </div>
+              <h1 class="status-title">Event Full</h1>
+              <p class="status-message">Sorry, this event has reached its maximum capacity. No more spots are available.</p>
+            </div>
+          {% else %}
+            <h1 class="register-title">Register for Event</h1>
+            
+            <div class="event-info">
+              <h3 class="event-title">{{ event.title }}</h3>
+              <div class="event-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Date:</span>
+                  <span class="meta-value">{{ event.date_time|date:"M j, Y g:i A" }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Location:</span>
+                  <span class="meta-value">{{ event.location }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Available Spots:</span>
+                  <span class="meta-value">{{ available_spots }}/{{ event.max_attendees }}</span>
+                </div>
+              </div>
+            </div>
+
+            <form method="post" class="register-form">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="register">
+              
+              <div class="registration-notice">
+                <div class="notice-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                  </svg>
+                </div>
+                <div class="notice-text">
+                  <strong>Free Registration</strong><br>
+                  This is a free event registration. You can also purchase tickets if available.
+                </div>
+              </div>
+
+              <button type="submit" class="register-btn">
+                Register for Free
+              </button>
+            </form>
+          {% endif %}
+
+          {% if message %}
+            <div class="register-message {% if message_type %}{{ message_type }}{% endif %}">
+              {{ message }}
+            </div>
+          {% endif %}
+
+          {% if available_tickets > 0 and not existing_ticket %}
+            <div class="ticket-option">
+              <div class="divider">
+                <span>or</span>
+              </div>
+              <a href="{% url 'purchase-ticket' event.pk %}" class="ticket-link">
+                {% if event.ticket_price and event.ticket_price > 0 %}
+                  Purchase tickets for ${{ event.ticket_price }}
+                {% else %}
+                  Get free tickets
+                {% endif %}
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="register-sidebar">
+        <div class="event-card">
+          {% if event.image %}
+            <img src="{{ event.image.url }}" alt="{{ event.title }}" class="event-image">
+          {% else %}
+            <div class="event-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+          {% endif %}
+          <div class="event-details">
+            <h4 class="event-card-title">{{ event.title }}</h4>
+            <div class="event-card-meta">
+              <div class="meta-row">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span>{{ event.date_time|date:"M j, Y g:i A" }}</span>
+              </div>
+              <div class="meta-row">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>{{ event.location }}</span>
+              </div>
+              <div class="meta-row">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="m22 21-3-3m0 0a5.5 5.5 0 1 0-7.78-7.78 5.5 5.5 0 0 0 7.78 7.78Z"/>
+                </svg>
+                <span>{{ event.registrations.count }}/{{ event.max_attendees }} registered</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Black Theme Registration Page */
+.black-register-page {
+  background: #000000;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: white;
+  padding: 40px 20px;
+}
+
+.black-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.register-header {
+  margin-bottom: 32px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #888888;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.register-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 60px;
+}
+
+/* Registration Form */
+.register-form-card {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.register-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 24px;
+}
+
+/* Status Section */
+.status-section {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.status-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.status-icon.success {
+  background: #22c55e20;
+  color: #22c55e;
+}
+
+.status-icon.error {
+  background: #ef444420;
+  color: #ef4444;
+}
+
+.status-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.status-message {
+  font-size: 16px;
+  color: #cccccc;
+  margin: 0;
+}
+
+/* Event Info */
+.event-info {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #222222;
+}
+
+.event-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.event-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-item {
+  display: flex;
+  gap: 8px;
+}
+
+.meta-label {
+  color: #888888;
+  font-size: 14px;
+  min-width: 100px;
+}
+
+.meta-value {
+  color: white;
+  font-size: 14px;
+}
+
+/* Registration Notice */
+.registration-notice {
+  display: flex;
+  gap: 16px;
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.notice-icon {
+  color: #3b82f6;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.notice-text {
+  color: #cccccc;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Register Button */
+.register-btn {
+  background: white;
+  color: #000000;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.register-btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-1px);
+}
+
+/* Messages */
+.register-message {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.register-message.success {
+  background: #22c55e20;
+  border: 1px solid #22c55e40;
+  color: #22c55e;
+}
+
+.register-message.error {
+  background: #ef444420;
+  border: 1px solid #ef444440;
+  color: #ef4444;
+}
+
+/* Ticket Option */
+.ticket-option {
+  margin-top: 32px;
+}
+
+.divider {
+  text-align: center;
+  position: relative;
+  margin: 24px 0;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #333333;
+}
+
+.divider span {
+  background: #111111;
+  color: #888888;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.ticket-link {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  background: transparent;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
+  border-radius: 12px;
+  text-decoration: none;
+  text-align: center;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.ticket-link:hover {
+  background: #3b82f620;
+  text-decoration: none;
+  color: #3b82f6;
+}
+
+/* Sidebar Event Card */
+.event-card {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.event-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.event-placeholder {
+  width: 100%;
+  height: 200px;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666666;
+}
+
+.event-details {
+  padding: 24px;
+}
+
+.event-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.event-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.meta-row svg {
+  color: #888888;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .register-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  
+  .register-form-card {
+    padding: 24px;
+  }
+}
+
+.registration-result-card {
+  background: var(--darker-gray);
+  border: 1px solid var(--border-dark);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  margin-top: 2rem;
+}
+
+.text-purple {
+  color: var(--accent-purple) !important;
+}
+
+.alert-success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+  border-radius: 8px;
+}
+
+.alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  border-radius: 8px;
+}
+
+.event-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.event-thumb-placeholder {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-purple);
+  border-radius: 8px;
+  font-size: 1.5rem;
+}
+
+.btn-primary {
+  background: var(--accent-purple);
+  border-color: var(--accent-purple);
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  transform: translateY(-1px);
+}
+
+.btn-outline-light {
+  border-color: var(--border-dark);
+  color: var(--text-light);
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-light:hover {
+  background: var(--darkest-gray);
+  border-color: var(--text-muted);
+  color: var(--text-light);
+}
+
+@media (max-width: 768px) {
+  .registration-result-card {
+    padding: 2rem 1.5rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+  }
+}
+</style>
+{% endblock %}
