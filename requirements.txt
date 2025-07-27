@@ -13,3 +13,6 @@ requests==2.32.4
 six==1.17.0
 sqlparse==0.5.3
 urllib3==2.5.0
+gunicorn==23.0.0
+packaging==25.0
+sqlparse==0.5.3
